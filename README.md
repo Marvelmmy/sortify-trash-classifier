@@ -1,2 +1,14 @@
-# sortify-trash-classifier
-Sortify is an AI-powered waste classification web app that helps users identify types of trash using image recognition. Built with FastAPI as the backend and a custom-trained ResNet50 PyTorch model, the app classifies uploaded or example images into one of four categories:
+# ♻️ Sortify Waste Classifier
+
+A FastAPI web app to classify waste as hazardous, organic, recyclable, or other using a ResNet50 model trained on image data.
+
+## 🖼️ Upload an image
+
+The app shows prediction + confidence score + disposal tip.
+
+## 🚀 Powered by:
+
+- FastAPI
+- PyTorch
+- Bootstrap
+- Hugging Face Spaces
