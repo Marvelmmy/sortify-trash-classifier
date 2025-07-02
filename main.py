@@ -9,7 +9,7 @@ from PIL import Image
 from io import BytesIO
 import os
 from huggingface_hub import hf_hub_download
-model_path = hf_hub_download(repo_id="marvelmmy/sortify-resnet-model", filename="sortify_model.pth")
+model_path = hf_hub_download(repo_id="marvelmmy/Sortify-trash-classifier", filename="sortify_model.pth")
 model.load_state_dict(torch.load(model_path, map_location=device))
 
 
