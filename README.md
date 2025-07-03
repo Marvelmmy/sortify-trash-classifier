@@ -42,7 +42,7 @@ Sortify uses a custom-trained **ResNet50 deep learning model** built with PyTorc
 
 ---
 
-## 📸 Try It Live
+## 📸 Try It Live (disclaimer: this is the sample of the app)
 
 👉 [Click here to try Sortify on Hugging Face](https://huggingface.co/spaces/marvelmmy/sortify-app)
 
