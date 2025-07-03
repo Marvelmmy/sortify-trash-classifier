@@ -101,3 +101,8 @@ async def predict(request: Request, file: UploadFile = File(...)):
         "filename": file.filename,
         "image_path": f"/static/uploads/{filename}" if save_path else None
     })
+
+import uvicorn
+
+if __name__ == "__main__":
+    uvicorn.run("app:app", host="0.0.0.0", port=7860)
