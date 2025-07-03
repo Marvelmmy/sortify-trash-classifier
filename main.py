@@ -8,6 +8,7 @@ from torchvision import models, transforms
 from PIL import Image
 from io import BytesIO
 import os
+import requests
 from huggingface_hub import hf_hub_download
 model_path = hf_hub_download(repo_id="marvelmmy/Sortify-trash-classifier", filename="sortify_model.pth")
 model.load_state_dict(torch.load(model_path, map_location=device))
@@ -26,6 +27,17 @@ model.fc = nn.Sequential(
     nn.Dropout(0.5),
     nn.Linear(model.fc.in_features, 4)
 )
+
+MODEL_URL = "https://huggingface.co/your-username/your-model-repo/resolve/main/sortify_model.pth"
+MODEL_PATH = "sortify_model.pth"
+
+# Download model if it's not already present
+if not os.path.exists(MODEL_PATH):
+    print("Downloading model...")
+    response = requests.get(MODEL_URL)
+    with open(MODEL_PATH, "wb") as f:
+        f.write(response.content)
+        
 model.load_state_dict(torch.load("sortify_model.pth", map_location=device))
 model.to(device)
 model.eval()
