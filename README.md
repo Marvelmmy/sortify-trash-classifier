@@ -52,5 +52,6 @@ Sortify uses a custom-trained **ResNet50 deep learning model** built with PyTorc
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/Marvelmmy/sortify-app.git
-   cd sortify-app
+git clone https://github.com/Marvelmmy/sortify-trash-classifier.git
+cd sortify-trash-classifier
+
