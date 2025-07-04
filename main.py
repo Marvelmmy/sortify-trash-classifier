@@ -27,9 +27,9 @@ model.fc = nn.Sequential(
 
 # model path
 model_path = hf_hub_download(repo_id="marvelmmy/Sortify-trash-classifier", filename="sortify_model.pth")
-models.load_state_dict(torch.load(model_path, map_location=device))
-models.to(device)
-models.eval()
+model.load_state_dict(torch.load(model_path, map_location=device))
+model.to(device)
+model.eval()
 
 # Transforms
 transform = transforms.Compose([
