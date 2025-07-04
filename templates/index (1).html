@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sortify - AI Waste Classifier</title>
+
+    <!-- ICON -->
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>♻️</text></svg>"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+
+    <style>
+      :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --eco-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        --danger-gradient: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+        --warning-gradient: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+        --secondary-gradient: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+        --glass-bg: rgba(255, 255, 255, 0.15);
+        --glass-border: rgba(255, 255, 255, 0.2);
+        --text-primary: #2d3436;
+        --text-secondary: #636e72;
+        --shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body,
+      html {
+        background: linear-gradient(
+          135deg,
+          #667eea 0%,
+          #764ba2 50%,
+          #11998e 100%
+        );
+        background-size: 400% 400%;
+        animation: gradientShift 10s ease infinite;
+        font-family: "Inter", sans-serif;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      @keyframes gradientShift {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      .main-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+      }
+
+      .content-wrapper {
+        width: 100%;
+        max-width: 600px;
+        animation: slideUp 0.8s ease-out;
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .title {
+        color: white;
+        font-family: "Poppins", sans-serif;
+        font-size: 4rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        background: linear-gradient(45deg, #fff, #f8f9fa);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .subtitle {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.1rem;
+        font-weight: 300;
+        text-align: center;
+        margin-bottom: 3rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      }
+
+      .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border-radius: 24px;
+        border: 1px solid var(--glass-border);
+        box-shadow: var(--shadow);
+        padding: 2.5rem;
+        margin-bottom: 2rem;
+        transition: all 0.3s ease;
+      }
+
+      .glass-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+      }
+
+      .upload-section h3 {
+        color: white;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        text-align: center;
+      }
+
+      .file-input-wrapper {
+        position: relative;
+        overflow: hidden;
+        display: block;
+        margin-bottom: 1.5rem;
+      }
+
+      .file-input {
+        position: absolute;
+        left: -9999px;
+      }
+
+      .file-input-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        background: rgba(255, 255, 255, 0.1);
+        border: 2px dashed rgba(255, 255, 255, 0.3);
+        border-radius: 16px;
+        color: white;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-align: center;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .file-input-label:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.5);
+        transform: scale(1.02);
+      }
+
+      .file-input-label i {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .classify-btn {
+        background: var(--eco-gradient);
+        border: none;
+        border-radius: 50px;
+        padding: 1rem 2rem;
+        color: white;
+        font-weight: 600;
+        font-size: 1.1rem;
+        width: 100%;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 25px rgba(17, 153, 142, 0.3);
+      }
+
+      .classify-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 35px rgba(17, 153, 142, 0.4);
+      }
+
+      .classify-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .preview-image {
+        max-width: 100%;
+        max-height: 300px;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        margin: 1rem 0;
+        transition: all 0.3s ease;
+      }
+
+      .result-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        border: 1px solid var(--glass-border);
+        padding: 2rem;
+        margin-top: 2rem;
+        animation: resultSlideIn 0.6s ease-out;
+      }
+
+      @keyframes resultSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px) scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      .result-header {
+        text-align: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .result-category {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-transform: capitalize;
+      }
+
+      .result-confidence {
+        font-size: 1.2rem;
+        font-weight: 500;
+        opacity: 0.9;
+      }
+
+      .result-tip {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 1rem;
+        margin: 1rem 0;
+        border-left: 4px solid;
+      }
+
+      .result-tip strong {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+      }
+
+      /* Category-specific styling */
+      .organic {
+        color: #00b894;
+        border-left-color: #00b894;
+      }
+
+      .recyclable {
+        color: #0984e3;
+        border-left-color: #0984e3;
+      }
+
+      .hazardous {
+        color: #e17055;
+        border-left-color: #e17055;
+      }
+
+      .others {
+        color: #636e72;
+        border-left-color: #636e72;
+      }
+
+      /* Enhanced Result Styling */
+      .category-badge-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 2rem;
+      }
+
+      .category-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem 2rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 1.2rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        animation: badgePulse 2s ease-in-out infinite alternate;
+      }
+
+      .category-badge i {
+        font-size: 1.5rem;
+        margin-right: 0.5rem;
+      }
+
+      @keyframes badgePulse {
+        from {
+          transform: scale(1);
+        }
+        to {
+          transform: scale(1.05);
+        }
+      }
+
+      .organic-badge {
+        background: linear-gradient(135deg, #00b894, #00cec9);
+        color: white;
+      }
+
+      .recyclable-badge {
+        background: linear-gradient(135deg, #0984e3, #74b9ff);
+        color: white;
+      }
+
+      .hazardous-badge {
+        background: linear-gradient(135deg, #e17055, #fd79a8);
+        color: white;
+      }
+
+      .others-badge {
+        background: linear-gradient(135deg, #636e72, #b2bec3);
+        color: white;
+      }
+
+      .confidence-container {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        backdrop-filter: blur(10px);
+      }
+
+      .confidence-label {
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        text-align: center;
+      }
+
+      .confidence-score {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 1rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .confidence-bar {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        height: 8px;
+        overflow: hidden;
+        margin-bottom: 0.5rem;
+      }
+
+      .confidence-fill {
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          #ff6b6b 0%,
+          #ffa726 30%,
+          #66bb6a 60%,
+          #4caf50 100%
+        );
+        border-radius: 10px;
+        transition: width 1s ease-in-out;
+      }
+
+      .confidence-description {
+        text-align: center;
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+
+      .conf-high {
+        color: #4caf50;
+      }
+      .conf-medium {
+        color: #ff9800;
+      }
+      .conf-low {
+        color: #ff5722;
+      }
+      .conf-very-low {
+        color: #f44336;
+      }
+
+      .disposal-section {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        backdrop-filter: blur(10px);
+      }
+
+      .disposal-header {
+        display: flex;
+        align-items: center;
+        color: white;
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+        font-weight: 600;
+      }
+
+      .disposal-header h4 {
+        margin: 0;
+        color: white;
+      }
+
+      .disposal-content {
+        color: white;
+      }
+
+      .disposal-text {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+        padding: 1rem;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        border-left: 4px solid;
+      }
+
+      .disposal-content.organic .disposal-text {
+        border-left-color: #00b894;
+      }
+      .disposal-content.recyclable .disposal-text {
+        border-left-color: #0984e3;
+      }
+      .disposal-content.hazardous .disposal-text {
+        border-left-color: #e17055;
+      }
+      .disposal-content.others .disposal-text {
+        border-left-color: #636e72;
+      }
+
+      .disposal-details {
+        display: grid;
+        gap: 0.8rem;
+      }
+
+      .detail-item {
+        display: flex;
+        align-items: center;
+        padding: 0.8rem;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        font-size: 0.95rem;
+      }
+
+      .detail-item i {
+        margin-right: 0.8rem;
+        font-size: 1.1rem;
+        width: 20px;
+        text-align: center;
+      }
+
+      .image-analysis-section {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        backdrop-filter: blur(10px);
+      }
+
+      .image-analysis-header {
+        color: white;
+        text-align: center;
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+      }
+
+      .image-wrapper {
+        position: relative;
+        display: inline-block;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        transition: transform 0.3s ease;
+      }
+
+      .image-wrapper:hover {
+        transform: scale(1.02);
+      }
+
+      .image-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+        padding: 1rem;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+      }
+
+      .image-wrapper:hover .image-overlay {
+        transform: translateY(0);
+      }
+
+      .image-info {
+        color: white;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 1.5rem;
+      }
+
+      .action-btn {
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        min-width: 180px;
+        justify-content: center;
+      }
+
+      .primary-btn {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+      }
+
+      .primary-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+        color: white;
+      }
+
+      .secondary-btn {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      }
+
+      .secondary-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.5);
+        transform: translateY(-2px);
+        color: white;
+      }
+
+      .uploaded-result-image {
+        max-width: 100%;
+        max-height: 400px;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        margin-top: 1rem;
+      }
+
+      .loading {
+        display: none;
+        text-align: center;
+        color: white;
+        margin-top: 1rem;
+      }
+
+      .loading i {
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Responsive design */
+      @media (max-width: 768px) {
+        .title {
+          font-size: 3rem;
+        }
+
+        .glass-card {
+          padding: 1.5rem;
+          margin: 1rem;
+        }
+
+        .main-container {
+          padding: 1rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .title {
+          font-size: 2.5rem;
+        }
+
+        .subtitle {
+          font-size: 1rem;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="main-container">
+      <div class="content-wrapper">
+        <!-- Header -->
+        <div class="text-center mb-4">
+          <h1 class="title">Sortify</h1>
+          <p class="subtitle">
+            <i class="fas fa-recycle me-2"></i>
+            Smart AI-Powered Waste Classification System
+          </p>
+        </div>
+
+        <!-- Upload Form -->
+        <div class="glass-card upload-section">
+          <h3><i class="fas fa-upload me-2"></i>Upload Waste Image</h3>
+
+          <form
+            action="/predict"
+            method="post"
+            enctype="multipart/form-data"
+            id="uploadForm"
+          >
+            <div class="file-input-wrapper">
+              <input
+                type="file"
+                name="file"
+                id="fileInput"
+                class="file-input"
+                accept="image/*"
+                onchange="previewImage(event)"
+                required
+              />
+              <label for="fileInput" class="file-input-label" id="fileLabel">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <span>Click to select an image</span>
+                <small>Supports JPG, PNG, GIF</small>
+              </label>
+            </div>
+
+            <!-- Image Preview -->
+            <div class="text-center">
+              <img
+                id="preview"
+                src="#"
+                class="preview-image d-none"
+                alt="Preview Image"
+              />
+            </div>
+
+            <!-- Loading Animation -->
+            <div class="loading" id="loading">
+              <i class="fas fa-spinner fa-2x"></i>
+              <p class="mt-2">Analyzing image...</p>
+            </div>
+
+            <button type="submit" class="classify-btn" id="classifyBtn">
+              <i class="fas fa-brain me-2"></i>Classify Waste
+            </button>
+          </form>
+        </div>
+
+        <!-- Result Section -->
+        {% if result %}
+        <div class="result-card">
+          <!-- Result Header with Category Badge -->
+          <div class="result-header">
+            <div class="category-badge-container">
+              {% if result == "organic" %}
+              <div class="category-badge organic-badge">
+                <i class="fas fa-leaf"></i>
+                <span class="badge-text">ORGANIC</span>
+              </div>
+              {% elif result == "recyclable" %}
+              <div class="category-badge recyclable-badge">
+                <i class="fas fa-recycle"></i>
+                <span class="badge-text">RECYCLABLE</span>
+              </div>
+              {% elif result == "hazardous" %}
+              <div class="category-badge hazardous-badge">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span class="badge-text">HAZARDOUS</span>
+              </div>
+              {% else %}
+              <div class="category-badge others-badge">
+                <i class="fas fa-trash-alt"></i>
+                <span class="badge-text">GENERAL WASTE</span>
+              </div>
+              {% endif %}
+            </div>
+
+            <!-- Confidence Score with Visual Indicator -->
+            <div class="confidence-container">
+              <div class="confidence-label">
+                <i class="fas fa-chart-line me-2"></i>Prediction Confidence
+              </div>
+              <div class="confidence-score">{{ confidence }}</div>
+              <div class="confidence-bar">
+                <div
+                  class="confidence-fill"
+                  style="width: {{ confidence|replace('%', '') }}%"
+                ></div>
+              </div>
+              <div class="confidence-description">
+                {% set conf_num = confidence|replace('%', '')|int %} {% if
+                conf_num >= 90 %}
+                <span class="conf-high"
+                  ><i class="fas fa-check-circle me-1"></i>Very High
+                  Confidence</span
+                >
+                {% elif conf_num >= 70 %}
+                <span class="conf-medium"
+                  ><i class="fas fa-thumbs-up me-1"></i>High Confidence</span
+                >
+                {% elif conf_num >= 50 %}
+                <span class="conf-low"
+                  ><i class="fas fa-question-circle me-1"></i>Medium
+                  Confidence</span
+                >
+                {% else %}
+                <span class="conf-very-low"
+                  ><i class="fas fa-exclamation-circle me-1"></i>Low
+                  Confidence</span
+                >
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Enhanced Disposal Instructions -->
+          <div class="disposal-section">
+            <div class="disposal-header">
+              <i class="fas fa-info-circle me-2"></i>
+              <h4>How to Dispose</h4>
+            </div>
+            <div class="disposal-content {{ result }}">
+              <div class="disposal-text">{{ tip }}</div>
+
+              <!-- Additional disposal information -->
+              <div class="disposal-details">
+                {% if result == "organic" %}
+                <div class="detail-item">
+                  <i class="fas fa-seedling"></i>
+                  <span
+                    >Perfect for composting and creating nutrient-rich
+                    soil</span
+                  >
+                </div>
+                <div class="detail-item">
+                  <i class="fas fa-clock"></i>
+                  <span>Decomposes naturally in 2-4 weeks</span>
+                </div>
+                {% elif result == "recyclable" %}
+                <div class="detail-item">
+                  <i class="fas fa-industry"></i>
+                  <span>Can be processed into new products</span>
+                </div>
+                <div class="detail-item">
+                  <i class="fas fa-water"></i>
+                  <span>Clean thoroughly before recycling</span>
+                </div>
+                {% elif result == "hazardous" %}
+                <div class="detail-item">
+                  <i class="fas fa-shield-alt"></i>
+                  <span>Requires special handling and disposal</span>
+                </div>
+                <div class="detail-item">
+                  <i class="fas fa-phone"></i>
+                  <span>Contact local waste management authority</span>
+                </div>
+                {% else %}
+                <div class="detail-item">
+                  <i class="fas fa-trash"></i>
+                  <span>Goes to regular landfill</span>
+                </div>
+                <div class="detail-item">
+                  <i class="fas fa-reduce"></i>
+                  <span>Consider reducing this type of waste</span>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- Image Analysis Section -->
+          {% if image_path %}
+          <div class="image-analysis-section">
+            <div class="image-analysis-header">
+              <i class="fas fa-image me-2"></i>Analyzed Image
+            </div>
+            <div class="text-center">
+              <div class="image-wrapper">
+                <img
+                  src="{{ image_path }}"
+                  alt="Analyzed waste image"
+                  class="uploaded-result-image"
+                />
+                <div class="image-overlay">
+                  <div class="image-info">
+                    <i class="fas fa-file-image"></i>
+                    <span>{{ filename }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Action Buttons -->
+          <div class="action-buttons">
+            <button onclick="location.reload()" class="action-btn primary-btn">
+              <i class="fas fa-redo me-2"></i>Classify Another Image
+            </button>
+            <button onclick="downloadResult()" class="action-btn secondary-btn">
+              <i class="fas fa-download me-2"></i>Save Result
+            </button>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Enhanced JavaScript -->
+    <script>
+      function previewImage(event) {
+        const reader = new FileReader();
+        const imageField = document.getElementById("preview");
+        const fileLabel = document.getElementById("fileLabel");
+
+        // Remove old prediction result if it exists
+        const existingResult = document.querySelector(".result-card");
+        if (existingResult) {
+          existingResult.style.animation = "fadeOut 0.3s ease-out";
+          setTimeout(() => existingResult.remove(), 300);
+        }
+
+        reader.onload = function () {
+          imageField.src = reader.result;
+          imageField.classList.remove("d-none");
+
+          // Update file label with animation
+          fileLabel.innerHTML = `
+            <i class="fas fa-check-circle"></i>
+            <span>Image selected successfully!</span>
+            <small>Click to change image</small>
+          `;
+          fileLabel.style.background = "rgba(0, 184, 148, 0.2)";
+          fileLabel.style.borderColor = "rgba(0, 184, 148, 0.5)";
+
+          // Add success animation
+          fileLabel.style.transform = "scale(1.02)";
+          setTimeout(() => {
+            fileLabel.style.transform = "scale(1)";
+          }, 200);
+        };
+
+        reader.readAsDataURL(event.target.files[0]);
+      }
+
+      // Enhanced form submission with loading state
+      document
+        .getElementById("uploadForm")
+        .addEventListener("submit", function (e) {
+          const loadingEl = document.getElementById("loading");
+          const btnEl = document.getElementById("classifyBtn");
+
+          loadingEl.style.display = "block";
+          btnEl.disabled = true;
+          btnEl.innerHTML =
+            '<i class="fas fa-spinner fa-spin me-2"></i>Analyzing...';
+
+          // Add pulse animation to loading
+          loadingEl.style.animation = "pulse 1.5s ease-in-out infinite";
+        });
+
+      // Download result function
+      function downloadResult() {
+        const resultData = {
+          category:
+            document.querySelector(".category-badge .badge-text")
+              ?.textContent || "Unknown",
+          confidence:
+            document.querySelector(".confidence-score")?.textContent || "0%",
+          tip:
+            document.querySelector(".disposal-text")?.textContent ||
+            "No tip available",
+          timestamp: new Date().toISOString(),
+          filename:
+            document.querySelector(".image-info span")?.textContent ||
+            "unknown.jpg",
+        };
+
+        const dataStr = JSON.stringify(resultData, null, 2);
+        const dataBlob = new Blob([dataStr], { type: "application/json" });
+        const url = URL.createObjectURL(dataBlob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `sortify-result-${Date.now()}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        // Show success feedback
+        const btn = event.target;
+        const originalContent = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check me-2"></i>Downloaded!';
+        btn.style.background = "linear-gradient(135deg, #00b894, #00cec9)";
+
+        setTimeout(() => {
+          btn.innerHTML = originalContent;
+          btn.style.background = "";
+        }, 2000);
+      }
+
+      // Enhanced interactive effects
+      document.addEventListener("DOMContentLoaded", function () {
+        // Add staggered animation to result elements
+        const resultElements = document.querySelectorAll(
+          ".category-badge, .confidence-container, .disposal-section, .image-analysis-section"
+        );
+        resultElements.forEach((element, index) => {
+          element.style.opacity = "0";
+          element.style.transform = "translateY(20px)";
+
+          setTimeout(() => {
+            element.style.transition = "opacity 0.6s ease, transform 0.6s ease";
+            element.style.opacity = "1";
+            element.style.transform = "translateY(0)";
+          }, index * 200);
+        });
+
+        // Animate confidence bar
+        const confidenceFill = document.querySelector(".confidence-fill");
+        if (confidenceFill) {
+          const targetWidth = confidenceFill.style.width;
+          confidenceFill.style.width = "0%";
+
+          setTimeout(() => {
+            confidenceFill.style.transition = "width 2s ease-in-out";
+            confidenceFill.style.width = targetWidth;
+          }, 1000);
+        }
+
+        // Add hover effects to cards
+        const cards = document.querySelectorAll(".glass-card, .result-card");
+        cards.forEach((card) => {
+          card.addEventListener("mouseenter", function () {
+            this.style.transform = "translateY(-5px)";
+          });
+
+          card.addEventListener("mouseleave", function () {
+            this.style.transform = "translateY(0)";
+          });
+        });
+
+        // Add scroll reveal animation
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.style.opacity = "1";
+              entry.target.style.transform = "translateY(0)";
+            }
+          });
+        });
+
+        document
+          .querySelectorAll(".disposal-details .detail-item")
+          .forEach((item) => {
+            item.style.opacity = "0";
+            item.style.transform = "translateY(10px)";
+            item.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+            observer.observe(item);
+          });
+      });
+
+      // Add enhanced fade out animation
+      const style = document.createElement("style");
+      style.textContent = `
+        @keyframes fadeOut {
+          from { opacity: 1; transform: translateY(0) scale(1); }
+          to { opacity: 0; transform: translateY(-20px) scale(0.95); }
+        }
+        
+        @keyframes pulse {
+          0%, 100% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.05); opacity: 0.8; }
+        }
+        
+        .detail-item {
+          transition: all 0.3s ease;
+        }
+        
+        .detail-item:hover {
+          background: rgba(255, 255, 255, 0.1);
+          transform: translateX(5px);
+        }
+      `;
+      document.head.appendChild(style);
+    </script>
+  </body>
+</html>
